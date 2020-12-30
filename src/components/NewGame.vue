@@ -1,17 +1,21 @@
 <template>
-<div class="frame">
+<div class="frame" id="test">
   <h2>New Game Wizard</h2>
-  <div>
+  <section>
     <label for="num-players">Number of players:</label>
-    <input type="number" name="num-players" id="num-players" v-on:change="updateNumPlayers">
-  </div>
+    <input type="number" name="num-players" id="num-players" v-on:change="updateNumPlayers" v-bind:value="numPlayers">
+  </section>
 
-  <div v-if="numPlayers != null">
-    <div v-for="item of Array(numPlayers).keys()" v-bind:key="item">
+  <section>
+    <div class="input-group" v-for="item of Array(numPlayers).keys()" v-bind:key="item">
       <label v-bind:for="'player-name-' + (item+1)">Player {{ item + 1 }} name:</label>
-      <input type="text" v-bind:id="'player-name-' + (item+1)" v-on:change="playerName">
+      <input class="player-name" type="text" v-bind:id="'player-name-' + (item+1)" v-on:change="playerName">
     </div>
-  </div>
+  </section>
+
+  <section hidden id="save-and-generate">
+    <button v-on:click="saveAndGenerate">Save and Generate Game</button>
+  </section>
 </div>
 </template>
 
@@ -20,7 +24,8 @@ export default {
   name: 'new-game',
   data() {
     return {
-      numPlayers: null,
+      numPlayers: 0,
+      players: [],
     }
   },
   methods: {
@@ -28,12 +33,24 @@ export default {
       this.numPlayers = +evt.target.value;
     },
     playerName(evt) {
-      console.log(evt.target.value);
+      let players = Array.from(document.querySelectorAll('input.player-name'));
+      let allFilledIn = players.every((el) => el.value.length > 0);
+      if (allFilledIn) {
+        document.getElementById('save-and-generate').hidden = false;
+      }
+    },
+    saveAndGenerate(evt) {
+      console.log('Saving');
+      console.log(this.$store.state.count);
+      this.$store.commit('increment');
+      console.log(this.$store.state.count);
     }
   }
 }
 </script>
 
 <style>
-
+section {
+  margin: 1rem auto;
+}
 </style>
