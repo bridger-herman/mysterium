@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import axios from 'axios'
 
 const client = axios.create({
@@ -16,19 +15,19 @@ export default {
       return req.data
     })
   },
-  getPosts () {
-    return this.execute('get', '/posts')
+  getPlayers () {
+    return this.execute('get', '/players')
   },
-  getPost (id) {
-    return this.execute('get', `/posts/${id}`)
+  getPlayer (id) {
+    return this.execute('get', `/players/${id}`)
   },
-  createPost (data) {
-    return this.execute('post', '/posts', data)
+  createPlayer (data) {
+    return this.execute('post', '/players', data)
   },
-  updatePost (id, data) {
-    return this.execute('put', `/posts/${id}`, data)
+  updatePlayer (id, data) {
+    return this.execute('put', `/players/${id}`, data)
   },
-  deletePost (id) {
-    return this.execute('delete', `/posts/${id}`)
+  deletePlayer (id) {
+    return this.execute('delete', `/players/${id}`)
   }
 }

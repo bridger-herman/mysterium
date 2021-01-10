@@ -2,35 +2,46 @@
 <div class="frame" id="test">
   <h2>New Game Wizard</h2>
   <section>
-    <label for="num-players">Number of players:</label>
-    <input type="number" name="num-players" id="num-players" v-on:change="updateNumPlayers" v-bind:value="numPlayers">
-  </section>
-
-  <section>
-    <div class="input-group" v-for="item of Array(numPlayers).keys()" v-bind:key="item">
-      <label v-bind:for="'player-name-' + (item+1)">Player {{ item + 1 }} name:</label>
-      <input class="player-name" type="text" v-bind:id="'player-name-' + (item+1)" v-on:change="playerName">
+    <div class="input-group" v-for="player of players" v-bind:key="player.name">
+      <label>Player name:</label>
+      <input class="player-name" type="text" v-on:change="playerName" v-model="player.name">
+      <button v-on:click="deletePlayer(player.name)">x</button>
     </div>
   </section>
 
-  <section hidden id="save-and-generate">
-    <button v-on:click="saveAndGenerate">Save and Generate Game</button>
+  <section>
+    <button v-on:click="addPlayer">+ Create player</button>
   </section>
+
+  <!-- <section hidden id="save-and-generate">
+    <button v-on:click="saveAndGenerate">Save and Generate Game</button>
+  </section> -->
 </div>
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'new-game',
   data() {
     return {
-      numPlayers: 0,
       players: [],
     }
   },
+  async mounted() {
+    this.syncPlayerList();
+  },
   methods: {
-    updateNumPlayers(evt) {
-      this.numPlayers = +evt.target.value;
+    async syncPlayerList() {
+      this.players = await api.getPlayers();
+    },
+    addPlayer() {
+      this.players.push({});
+    },
+    async deletePlayer(id) {
+      await api.deletePlayer(id);
+      await this.syncPlayerList();
     },
     playerName(evt) {
       let players = Array.from(document.querySelectorAll('input.player-name'));
@@ -40,11 +51,19 @@ export default {
       }
     },
     saveAndGenerate(evt) {
-      console.log('Saving');
-      console.log(this.$store.state.count);
-      this.$store.commit('increment');
-      console.log(this.$store.state.count);
-    }
+      let players = Array.from(document.querySelectorAll('input.player-name'));
+      for (const player of players) {
+        let name = player.value;
+        let playerData = {
+          name, 
+          // personCard: '',
+          // placeCard: '',
+          // toolCard: '',
+        };
+        this.players.push(playerData);
+        api.createPlayer(playerData);
+      }
+    },
   }
 }
 </script>
